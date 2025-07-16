@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service //indicates the class is a service component, facilitates dependency injection
+//Repository is injected to allow it to use it for database operations
 public class TransactionService {
     private final TransactionRepository transactionRepository;
 

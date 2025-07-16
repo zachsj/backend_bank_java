@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service //indicates the class is a service component, facilitates dependency injection
+//Repository is injected to allow it to use it for database operations
 public class AccountService {
     private final AccountRepository accountRepository; //final, ensures
     //will always refer to same instance passed into the constructor.
@@ -28,7 +29,7 @@ public class AccountService {
         return accountRepository.findById(id);
     }
 
-    public void delete(Account account) {
-        accountRepository.delete(account);
+    public void delete(Long id) {
+        accountRepository.deleteById(id);
     }
 }
