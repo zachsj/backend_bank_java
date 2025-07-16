@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service //indicates the class is a service component, facilitates dependency injection
 public class CustomerService {
-    private final CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository; //final, ensures
+    //will always refer to same instance passed into the constructor.
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
