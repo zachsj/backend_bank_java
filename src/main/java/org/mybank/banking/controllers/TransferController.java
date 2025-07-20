@@ -15,12 +15,12 @@ public class TransferController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> transferFunds(@RequestBody TransferRequest transferRequest) {
-        transactionService.transferFunds(
+    public ResponseEntity<String> transferFunds(@RequestBody TransferRequest transferRequest) {
+        String message = transactionService.transferFunds(
                 transferRequest.getSourceAcctNo(),
                 transferRequest.getTargetAcctNo(),
                 transferRequest.getAmount());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(message);
     }
 }
 

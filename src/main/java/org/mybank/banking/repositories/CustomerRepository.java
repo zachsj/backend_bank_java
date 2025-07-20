@@ -4,5 +4,8 @@ import org.mybank.banking.models.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
+
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    Customer findByEmail(String email);
+    Customer findByPhone(String phone);
 } //1st param type is type for entity, and 2nd param type for unique id

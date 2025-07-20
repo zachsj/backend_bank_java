@@ -4,6 +4,13 @@ import jakarta.persistence.*; //allows to use various JPA annotations & interfac
 // enabling to define entities and perform database operations.
 
 @Entity // maps to a database table. JPA entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email"),
+                @UniqueConstraint(columnNames = "phone")
+        }
+)
+
 public class Customer {
     @Id // makes it a primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,7 +18,11 @@ public class Customer {
 
     private String firstName;
     private String lastName;
+
+    @Column(unique = true)
     private String email;
+
+    @Column(unique = true)
     private String phone;
 
     // Getters and Setters

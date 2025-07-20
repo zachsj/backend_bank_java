@@ -8,6 +8,7 @@ import org.mybank.banking.repositories.AccountRepository;
 import org.mybank.banking.repositories.TransactionRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.mybank.banking.exceptions.AccountNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,10 +44,11 @@ public class TransactionService {
     }
 
     @Transactional
-    public void recordTransaction(String acctNo, BigDecimal amount, String transactionType) {
+    public void recordTransaction(String acctNo, BigDecimal amount, String transactionType)
+    {
         Account account = accountRepository.findByAcctNo(acctNo);
         if (account == null) {
-            throw new IllegalStateException("Account not found");
+            throw new IllegalArgumentException("Account not found:  " + acctNo);
         }
 
         if ("WITHDRAWAL".equals(transactionType)) {
@@ -59,7 +61,7 @@ public class TransactionService {
             account.setBalance(account.getBalance().add(amount));
 
         } else {
-            throw new IllegalArgumentException("Invalid transaction type");
+            throw new IllegalArgumentException("Invalid transaction type:  " + transactionType);
         }
 
         // Save the updated account balance
@@ -104,7 +106,7 @@ public class TransactionService {
 
     // transfer funds between accounts
     @Transactional
-    public void transferFunds(String sourceAcctNo, String targetAcctNo, BigDecimal amount) {
+    public String transferFunds(String sourceAcctNo, String targetAcctNo, BigDecimal amount) {
         // Fetch both accounts
         Account sourceAccount = accountRepository.findByAcctNo(sourceAcctNo);
         Account targetAccount = accountRepository.findByAcctNo(targetAcctNo);
@@ -143,6 +145,8 @@ public class TransactionService {
 
         transactionRepository.save(outTransaction);
         transactionRepository.save(inTransaction);
+
+        return String.format("Successful transfer of funds from account %s to %s in the amount of %s", sourceAcctNo, targetAcctNo, amount);
     }
 
 }

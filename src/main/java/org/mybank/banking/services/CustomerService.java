@@ -4,6 +4,7 @@ import org.mybank.banking.models.Account;
 import org.mybank.banking.models.Customer;
 import org.mybank.banking.repositories.AccountRepository;
 import org.mybank.banking.repositories.CustomerRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +14,10 @@ import java.util.Optional;
 //Repository is injected to allow it to use it for database operations
 public class CustomerService {
     private final CustomerRepository customerRepository; //final, ensures
-    private final AccountRepository accountRepository;
     //will always refer to same instance passed into the constructor.
+    private final AccountRepository accountRepository;
 
+    //constructor
     public CustomerService(CustomerRepository customerRepository, AccountRepository accountRepository) {
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
@@ -23,7 +25,22 @@ public class CustomerService {
 
     //save or update the provided customer instance to db. save if new customer, update existing.
     public Customer save(Customer customer) {
-        return customerRepository.save(customer);
+        // Only check for email conflicts if it's used by another customer
+        Customer existingByEmail = customerRepository.findByEmail(customer.getEmail());
+        if (existingByEmail != null && !existingByEmail.getId().equals(customer.getId())) {
+            throw new IllegalArgumentException("Email already in use by another customer");
+        }
+
+        Customer existingByPhone = customerRepository.findByPhone(customer.getPhone());
+        if (existingByPhone != null && !existingByPhone.getId().equals(customer.getId())) {
+            throw new IllegalArgumentException("Phone already in use by another customer");
+        }
+
+        try {
+            return customerRepository.save(customer);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Email or phone already in use");
+        }
     }
 
     public List<Customer> findAll() {

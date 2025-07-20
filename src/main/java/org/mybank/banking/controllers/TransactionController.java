@@ -1,10 +1,14 @@
 package org.mybank.banking.controllers;
 
 import org.mybank.banking.dto.TransactionFilterDTO;
+import org.mybank.banking.exceptions.AccountNotFoundException;
 import org.mybank.banking.models.Transaction;
 import org.mybank.banking.services.TransactionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.mybank.banking.exceptions.AccountNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,20 +27,18 @@ public class TransactionController {
 
     @PostMapping//ResponseEntity is entire HTTP response, @RequestBody indicates
     //the transaction param should be bound to body of http request
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction
+    public ResponseEntity<?> createTransaction(@RequestBody Transaction
     transaction) {
-        if (!transaction.getTransactionType().equals("DEPOSIT") &&
-                !transaction.getTransactionType().equals("WITHDRAWAL")
-        ) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        try {
         transactionService.recordTransaction(
                 transaction.getAcctNo(),
                 transaction.getAmount(),
                 transaction.getTransactionType()
         );
         return ResponseEntity.ok(transaction);
+    } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping

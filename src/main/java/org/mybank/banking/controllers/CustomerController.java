@@ -15,6 +15,7 @@ import java.util.Optional;
 public class CustomerController {
     private final CustomerService customerService;
 
+    //constructor
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
@@ -39,7 +40,7 @@ public class CustomerController {
         existingCustomer.setLastName(customer.getLastName());
         existingCustomer.setEmail(customer.getEmail());
         existingCustomer.setPhone(customer.getPhone());
-        Customer updatedCustomer = customerService.save(customer);
+        Customer updatedCustomer = customerService.save(existingCustomer);
         return ResponseEntity.ok(updatedCustomer);
     }
 
@@ -76,7 +77,7 @@ public class CustomerController {
         }  catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage()); //400
         }  catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()); //404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }
