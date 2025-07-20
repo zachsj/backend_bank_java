@@ -10,7 +10,7 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String acctNo;
     private BigDecimal amount;
     private LocalDateTime timestamp;
     private String transactionType;
@@ -27,6 +27,14 @@ public class Transaction {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAcctNo() {
+        return acctNo;
+    }
+
+    public void setAcctNo(String acctNo) {
+        this.acctNo = acctNo;
     }
 
     public BigDecimal getAmount() {
@@ -61,4 +69,8 @@ public class Transaction {
         this.account = account;
     }
 
+    // Method to set timestamp during transaction creation
+    public void initializeTimestamp() {
+        this.timestamp = LocalDateTime.now();
+    }
 }

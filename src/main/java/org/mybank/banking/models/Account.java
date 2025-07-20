@@ -11,15 +11,40 @@ public class Account {
     private Long id; //private for encapsulation, restrict direct access from
     //outside the class. Allows controlled access thru getters/setters.
 
-    private String accountNumber;
+    @Column(unique = true, nullable = false)
+    private String acctNo;
+
+    public static final String CHECKING = "CHECKING";
+    public static final String SAVINGS = "SAVINGS";
+
+    public static final String ACTIVE = "ACTIVE";
+    public static final String CLOSED = "CLOSED";
+    public static final String SUSPENDED = "SUSPENDED";
+
     private String accountType;
     private BigDecimal balance;
+    private String status;
 
     @ManyToOne // multiple accounts for single customer
     @JoinColumn(name = "customer_id", nullable = false) //specifies the foreign key
     //column in Account table that refers to Customer table. So can fetch customer
     //associated w any acct and vice versa.
     private Customer customer;
+
+    //Constructor
+    public Account() {
+    }
+
+    public Account(String accountType, BigDecimal initialBalance) {
+        setAccountType(accountType);
+        this.balance = initialBalance; //see line 36 AccountController.
+        this.acctNo = generateAccountNumber();
+        this.status = ACTIVE;
+    }
+
+    private String generateAccountNumber() {
+        return "ACC" + System.currentTimeMillis();
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -30,12 +55,12 @@ public class Account {
         this.id = id;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
+    public String getAcctNo() {
+        return acctNo;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setAcctNo(String acctNo) {
+        this.acctNo = acctNo;
     }
 
     public String getAccountType() {
@@ -43,6 +68,9 @@ public class Account {
     }
 
     public void setAccountType(String accountType) {
+        if (!accountType.equals(CHECKING) && !accountType.equals(SAVINGS)) {
+            throw new IllegalArgumentException("Invalid account type. Must be CHECKING or SAVINGS");
+        }
         this.accountType = accountType;
     }
 
@@ -62,4 +90,14 @@ public class Account {
         this.customer = customer;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        if (!status.equals(ACTIVE) && !status.equals(CLOSED) && !status.equals(SUSPENDED)) {
+            throw new IllegalArgumentException("Invalid status. Must be ACTIVE or CLOSED or SUSPENDED");
+        }
+        this.status = status;
+    }
 }
