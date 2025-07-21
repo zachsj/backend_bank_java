@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service //indicates the class is a service component, facilitates dependency injection
@@ -29,7 +30,7 @@ public class AccountService {
         if (customer.isPresent()) {
             return accountRepository.save(account);
         } else {
-            throw new RuntimeException("Customer not found");
+            throw new NoSuchElementException("Customer not found");
         }
     }
 
@@ -37,13 +38,17 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
-    public Optional<Account> findByAccountNumber(String acctNo) {
-        return Optional.ofNullable(accountRepository.findByAcctNo(acctNo));
+    public Account findByAccountNumber(String acctNo) {
+        Account account = accountRepository.findByAcctNo(acctNo);
+        if (account == null) {
+            throw new NoSuchElementException("Account not found");
+        }
+        return account;
+
     }
 
     public void delete(String acctNo) {
-        Account account = findByAccountNumber(acctNo)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Account account = findByAccountNumber(acctNo); //null already checked above.
         if (account.getBalance().compareTo(BigDecimal.ZERO) != 0) {
             throw new IllegalArgumentException("Cannot delete account with non-zero balance");
         }
@@ -51,9 +56,7 @@ public class AccountService {
     }
 
     public Account updateAccountStatus(String acctNo, String newStatus) {
-        Account account = findByAccountNumber(acctNo)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
+        Account account = findByAccountNumber(acctNo);
         // Validate the new status
         if (!newStatus.equals(Account.ACTIVE) &&
                 !newStatus.equals(Account.CLOSED) &&

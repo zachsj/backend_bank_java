@@ -31,10 +31,11 @@ public class Account {
     //associated w any acct and vice versa.
     private Customer customer;
 
-    //Constructor
+    //No arg Constructor for Jpa handling deposits/withdrawals
     public Account() {
     }
 
+    //Constructor for creating new acct
     public Account(String accountType, BigDecimal initialBalance) {
         setAccountType(accountType);
         this.balance = initialBalance; //see line 36 AccountController.

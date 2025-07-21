@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -18,6 +19,7 @@ public class AccountController {
     private final AccountService accountService;
     private final CustomerService customerService;
 
+    //Constructor
     public AccountController(AccountService accountService, CustomerService customerService) {
         this.accountService = accountService;
         this.customerService = customerService;
@@ -40,7 +42,7 @@ public class AccountController {
 
         //Find customer by ID
         Customer customer = customerService.findById(accountRequest.getCustomerId()).
-            orElseThrow(() -> new RuntimeException("Customer not found"));
+            orElseThrow(() -> new NoSuchElementException("Customer not found"));
         account.setCustomer(customer);
 
         Account savedAccount = accountService.save(account); //calls service method
@@ -57,12 +59,15 @@ public class AccountController {
 
     @GetMapping("/{acctNo}")
     public ResponseEntity<Account> getAccountByAcctNo(@PathVariable String acctNo) {
-        Optional<Account> account = accountService.findByAccountNumber(acctNo);
-        return account.map(ResponseEntity::ok).
-                orElseGet(() -> ResponseEntity.notFound().build()); //if Optional has no value
-        //should return a 404 Not Found status. .build() finalizes the ResponseEntity
+        try {
+            Account account = accountService.findByAccountNumber(acctNo);
+            return ResponseEntity.ok(account); // Return the account with 200 OK
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build(); // Return 404 Not Found if account doesn't exist
+        } //.build() finalizes the ResponseEntity
         //config & produces actual ResponseEntity object to be returned
     }
+
 
     @DeleteMapping("/{acctNo}")
     public ResponseEntity<String> deleteAccount(@PathVariable String acctNo) {
@@ -72,7 +77,7 @@ public class AccountController {
             // success, but no content to return in response body
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage()); // return 400 bad request
-        } catch (RuntimeException e) {
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND); // 404 not found
         }
     }

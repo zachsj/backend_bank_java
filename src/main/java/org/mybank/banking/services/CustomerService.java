@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service //indicates the class is a service component, facilitates dependency injection
@@ -53,7 +54,7 @@ public class CustomerService {
 
     public void delete(Long id) {
         if (!customerRepository.existsById(id)) {
-            throw new RuntimeException("Customer not found");
+            throw new NoSuchElementException("Customer not found");
         }
 
         if (hasOpenAccounts(id)) {
