@@ -8,8 +8,10 @@ import java.time.LocalDate;
 
 public class TransactionSpecifications {
 
+    //Specification is an interface that allows to define criteria queries for the Entity type
     public static Specification<Transaction> hasAccountNo(String accountNo) {
         return (root, query, criteriaBuilder) ->
+                //conjunction means adds no restrictions to query.
                 accountNo == null ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("acctNo"), accountNo);
     }
 

@@ -30,7 +30,7 @@ public class TransactionController {
     public ResponseEntity<?> createTransaction(@RequestBody Transaction
     transaction) {
         try {
-        transactionService.recordTransaction(
+        transactionService.recordTransaction( //calls the service file method
                 transaction.getAcctNo(),
                 transaction.getAmount(),
                 transaction.getTransactionType()
@@ -44,7 +44,7 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<List<Transaction>> getAllTransactions( //returns ResponseEntity
         //containing a list of transaction objects
-        @ModelAttribute TransactionFilterDTO filter)
+        @ModelAttribute TransactionFilterDTO filter) //DTO is the model the Spring binds request params to.
         {
      List<Transaction> transactions = transactionService.filterTransactions(filter);
             return ResponseEntity.ok(transactions);

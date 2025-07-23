@@ -3,6 +3,8 @@ package org.mybank.banking.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+//DTO(data transfer object). Controller receives http request, Spring auto maps
+// it into a TransactionFilterDTO object.
 public class TransactionFilterDTO {
 
     private String accountNo;

@@ -43,10 +43,10 @@ public class TransactionService {
         transactionRepository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional //Atomicity: all operations completed or none at all
     public void recordTransaction(String acctNo, BigDecimal amount, String transactionType)
     {
-        Account account = accountRepository.findByAcctNo(acctNo);
+        Account account = accountRepository.findByAcctNo(acctNo); //returns account object
         if (account == null) {
             throw new IllegalArgumentException("Account not found:  " + acctNo);
         }
@@ -105,7 +105,7 @@ public class TransactionService {
 
 
     // transfer funds between accounts
-    @Transactional
+    @Transactional //Atomicity: transfer must debit one account and credit the other in a single transaction
     public String transferFunds(String sourceAcctNo, String targetAcctNo, BigDecimal amount) {
         // Fetch both accounts
         Account sourceAccount = accountRepository.findByAcctNo(sourceAcctNo);
